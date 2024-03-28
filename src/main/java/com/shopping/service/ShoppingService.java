@@ -93,15 +93,17 @@ public class ShoppingService {
         Optional<ShoppingEntity> exist = shoppingDao.findById(shoppingId);
 
         if (exist.isEmpty()) {
-            throw new ShoppingCustomException("NO_SHOPPING_RECORDS", "Shopping list is empty");
+            throw new ShoppingCustomException("NO_SHOPPING_RECORDS", "Shopping item of ID " + shoppingId + " is empty");
         }
         ShoppingEntity shop = exist.get();
         shop.setProductName(shopping.getProductName());
         shop.setCustomerEmail(shopping.getCustomerEmail());
         shop.setSellingPrice(shopping.getSellingPrice());
+        shop.setBuyingPrice(shopping.getBuyingPrice());
 
-        if (shopping.getBuyingPrice() < shop.getBuyingPrice()) {
-            shop.setBuyingPrice(shopping.getBuyingPrice());
+        if (shop.getBuyingPrice() < shop.getSellingPrice()) {
+            throw new ShoppingCustomException("INVALID_BALANCE", "buying balance is low");
+            
         }
 
         shoppingDao.save(shop);
@@ -111,7 +113,7 @@ public class ShoppingService {
     public void remove(String shoppingId) {
         if (!shoppingDao.existsById(shoppingId)) {
             throw new ShoppingCustomException("SHOPPING_ITEM_NOT_FOUND",
-                    "Movie with id " + shoppingId + " not found");
+                    "Shopping item with id " + shoppingId + " not found");
         }
         shoppingDao.deleteById(shoppingId);
     }

@@ -1,7 +1,6 @@
 package com.shopping.controller;
 
 import com.shopping.entity.ShoppingEntity;
-import com.shopping.exception.ShoppingCustomException;
 import com.shopping.service.ShoppingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,12 +28,12 @@ public class ShoppingController {
             return ResponseEntity.badRequest().body("Invalid customer email");
         }
 
-        if (shopping.getBuyingPrice() < 0 || shopping.getSellingPrice() < 0) {
-            return ResponseEntity.badRequest().body("Value should be none negative");
+        if (shopping.getBuyingPrice() <= 0 || shopping.getSellingPrice() <= 0) {
+            return ResponseEntity.badRequest().body("Value should be non negative");
         }
 
         if (shopping.getBuyingPrice() < shopping.getSellingPrice()) {
-            throw new ShoppingCustomException("INVALID_BALANCE", "Insufficient balance");
+            return ResponseEntity.badRequest().body("Insufficient balance");
         }
 
         shoppingService.insert(shopping);
@@ -53,7 +52,7 @@ public class ShoppingController {
     }
 
     @PutMapping(value = "/shopping/{shoppingId}")
-    public ResponseEntity<ShoppingEntity> update(@PathVariable("shoppingId") String shoppingId, ShoppingEntity shopping) {
+    public ResponseEntity<ShoppingEntity> update(@PathVariable("shoppingId") String shoppingId, @RequestBody ShoppingEntity shopping) {
         return new ResponseEntity<>(shoppingService.change(shoppingId, shopping), HttpStatus.OK);
     }
 
