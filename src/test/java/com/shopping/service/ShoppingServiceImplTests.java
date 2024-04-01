@@ -3,6 +3,7 @@ package com.shopping.service;
 import com.shopping.dao.ShoppingDao;
 import com.shopping.entity.ShoppingEntity;
 import com.shopping.exception.ShoppingCustomException;
+import com.shopping.service.impl.ShoppingServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class ShoppingServiceTests {
+public class ShoppingServiceImplTests {
 
     private static final String SHOPPING_ID = "SHOPID001";
     private static final String PRODUCT_NAME = "Product 1";
@@ -27,7 +28,7 @@ public class ShoppingServiceTests {
     @Mock
     private ShoppingDao shoppingDao;
     @InjectMocks
-    private ShoppingService shoppingService;
+    private ShoppingServiceImpl shoppingServiceImpl;
 
     @BeforeEach
     public void setup() {
@@ -55,7 +56,7 @@ public class ShoppingServiceTests {
         when(shoppingDao.findById(anyString())).thenReturn(Optional.empty());
         when(shoppingDao.save(any(ShoppingEntity.class))).thenReturn(shoppingEntity);
 
-        ShoppingEntity result = shoppingService.insert(shoppingEntity);
+        ShoppingEntity result = shoppingServiceImpl.insert(shoppingEntity);
 
         assertNotNull(result);
         assertEquals("Product 1", result.getProductName());
@@ -71,7 +72,7 @@ public class ShoppingServiceTests {
 
         when(shoppingDao.findById(SHOPPING_ID)).thenReturn(Optional.of(shoppingEntity));
 
-        assertThrows(ShoppingCustomException.class, () -> shoppingService.insert(shoppingEntity));
+        assertThrows(ShoppingCustomException.class, () -> shoppingServiceImpl.insert(shoppingEntity));
     }
 
     @Test
@@ -81,7 +82,7 @@ public class ShoppingServiceTests {
 
         when(shoppingDao.findById(SHOPPING_ID)).thenReturn(Optional.of(shoppingEntity));
 
-        ShoppingEntity result = shoppingService.view(SHOPPING_ID);
+        ShoppingEntity result = shoppingServiceImpl.view(SHOPPING_ID);
 
         assertNotNull(result);
         assertEquals("SHOPID001", result.getShoppingId());
@@ -91,7 +92,7 @@ public class ShoppingServiceTests {
     public void testView_ShoppingItemNotFound() {
         when(shoppingDao.findById(SHOPPING_ID)).thenReturn(Optional.empty());
 
-        assertThrows(ShoppingCustomException.class, () -> shoppingService.view(SHOPPING_ID));
+        assertThrows(ShoppingCustomException.class, () -> shoppingServiceImpl.view(SHOPPING_ID));
     }
 
     @Test
@@ -102,7 +103,7 @@ public class ShoppingServiceTests {
 
         when(shoppingDao.findAll()).thenReturn(shoppingList);
 
-        List<ShoppingEntity> result = shoppingService.viewAll();
+        List<ShoppingEntity> result = shoppingServiceImpl.viewAll();
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -112,7 +113,7 @@ public class ShoppingServiceTests {
     public void testViewAll_NoShoppingItemsFound() {
         when(shoppingDao.findAll()).thenReturn(new ArrayList<>());
 
-        assertThrows(ShoppingCustomException.class, () -> shoppingService.viewAll());
+        assertThrows(ShoppingCustomException.class, () -> shoppingServiceImpl.viewAll());
     }
 
     @Test
@@ -126,7 +127,7 @@ public class ShoppingServiceTests {
         when(shoppingDao.findById(SHOPPING_ID)).thenReturn(Optional.of(existingEntity));
         when(shoppingDao.save(any(ShoppingEntity.class))).thenReturn(updatedEntity);
 
-        ShoppingEntity result = shoppingService.change(SHOPPING_ID, updatedEntity);
+        ShoppingEntity result = shoppingServiceImpl.change(SHOPPING_ID, updatedEntity);
 
         assertNotNull(result);
         assertEquals(500, result.getBuyingPrice());
@@ -136,7 +137,7 @@ public class ShoppingServiceTests {
     public void testChange_ShoppingItemNotFound() {
         when(shoppingDao.findById(SHOPPING_ID)).thenReturn(Optional.empty());
 
-        assertThrows(ShoppingCustomException.class, () -> shoppingService.change(SHOPPING_ID, new ShoppingEntity()));
+        assertThrows(ShoppingCustomException.class, () -> shoppingServiceImpl.change(SHOPPING_ID, new ShoppingEntity()));
     }
 
     @Test
@@ -145,7 +146,7 @@ public class ShoppingServiceTests {
 
         when(shoppingDao.existsById(SHOPPING_ID)).thenReturn(true);
 
-        shoppingService.remove(SHOPPING_ID);
+        shoppingServiceImpl.remove(SHOPPING_ID);
 
         verify(shoppingDao, times(1)).deleteById(SHOPPING_ID);
     }
@@ -156,7 +157,7 @@ public class ShoppingServiceTests {
 
         when(shoppingDao.existsById(shoppingId)).thenReturn(false);
 
-        assertThrows(ShoppingCustomException.class, () -> shoppingService.remove(shoppingId));
+        assertThrows(ShoppingCustomException.class, () -> shoppingServiceImpl.remove(shoppingId));
     }
 }
 

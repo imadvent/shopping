@@ -1,7 +1,7 @@
 package com.shopping.controller;
 
 import com.shopping.entity.ShoppingEntity;
-import com.shopping.service.ShoppingService;
+import com.shopping.service.impl.ShoppingServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ public class ShoppingControllerTests {
 
 
     @Mock
-    private ShoppingService shoppingService;
+    private ShoppingServiceImpl shoppingServiceImpl;
 
     @InjectMocks
     private ShoppingController shoppingController;
@@ -110,7 +110,7 @@ public class ShoppingControllerTests {
         ShoppingEntity shoppingEntity = new ShoppingEntity();
         shoppingEntity.setShoppingId(SHOPPING_ID);
 
-        when(shoppingService.view(SHOPPING_ID)).thenReturn(shoppingEntity);
+        when(shoppingServiceImpl.view(SHOPPING_ID)).thenReturn(shoppingEntity);
 
         ResponseEntity<ShoppingEntity> response = shoppingController.read(SHOPPING_ID);
 
@@ -122,7 +122,7 @@ public class ShoppingControllerTests {
     public void testReadAllShoppingItems() {
         List<ShoppingEntity> shoppingList = Collections.singletonList(new ShoppingEntity());
 
-        when(shoppingService.viewAll()).thenReturn(shoppingList);
+        when(shoppingServiceImpl.viewAll()).thenReturn(shoppingList);
 
         List<ShoppingEntity> response = shoppingController.readAll();
 
@@ -134,7 +134,7 @@ public class ShoppingControllerTests {
         ShoppingEntity updatedShoppingEntity = new ShoppingEntity();
         updatedShoppingEntity.setShoppingId(SHOPPING_ID);
 
-        when(shoppingService.change(eq(SHOPPING_ID), any(ShoppingEntity.class))).thenReturn(updatedShoppingEntity);
+        when(shoppingServiceImpl.change(eq(SHOPPING_ID), any(ShoppingEntity.class))).thenReturn(updatedShoppingEntity);
 
         ResponseEntity<ShoppingEntity> response = shoppingController.update(SHOPPING_ID, new ShoppingEntity());
 
