@@ -1,7 +1,6 @@
 package com.shopping.service;
 
 import com.shopping.entity.ShoppingEntity;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -9,7 +8,6 @@ import java.util.regex.Pattern;
 
 import static com.shopping.constants.ShoppingConstants.EMAIL_REGEX;
 
-@Service
 public interface ShoppingService {
 
     static boolean isValidEmail(String email) {

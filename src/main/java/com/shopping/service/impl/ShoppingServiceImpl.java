@@ -5,17 +5,16 @@ import com.shopping.entity.ShoppingEntity;
 import com.shopping.exception.ShoppingCustomException;
 import com.shopping.service.ShoppingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ShoppingServiceImpl implements ShoppingService {
 
     private static Integer counter = 0;
-
-    @Autowired
-    private ShoppingService shoppingService;
 
     @Autowired
     private ShoppingDao shoppingDao;
