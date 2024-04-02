@@ -1,5 +1,6 @@
 package com.shopping.service.impl;
 
+import com.shopping.constants.ShoppingConstants;
 import com.shopping.dao.ShoppingDao;
 import com.shopping.entity.ShoppingEntity;
 import com.shopping.exception.ShoppingCustomException;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+
+import static com.shopping.constants.ShoppingConstants.ID_PREFIX;
+import static com.shopping.constants.ShoppingConstants.SHOPPING_ID_PREFIX;
 
 @Service
 public class ShoppingServiceImpl implements ShoppingService {
@@ -22,11 +26,11 @@ public class ShoppingServiceImpl implements ShoppingService {
     @Override
     public String generateShoppingId() {
 
-        StringBuilder shoppingId = new StringBuilder("SHOPID");
+        StringBuilder shoppingId = new StringBuilder(SHOPPING_ID_PREFIX.getCode());
         if (counter == 0) {
             try {
                 String maxIdTill = shoppingDao.findAll().stream().map(ShoppingEntity::getShoppingId)
-                        .max(Comparator.naturalOrder()).orElse(shoppingId + "0");
+                        .max(Comparator.naturalOrder()).orElse(shoppingId + ID_PREFIX.getCode());
                 counter = Integer.parseInt(maxIdTill.substring(3));
                 counter++;
             } catch (Exception e) {
@@ -37,9 +41,9 @@ public class ShoppingServiceImpl implements ShoppingService {
         }
 
         if (String.valueOf(counter).length() == 1) {
-            shoppingId.append("00").append(counter);
+            shoppingId.append(ID_PREFIX.getDescription()).append(counter);
         } else if (String.valueOf(counter).length() == 2) {
-            shoppingId.append("0").append(counter);
+            shoppingId.append(ID_PREFIX.getCode()).append(counter);
         } else {
             shoppingId.append(counter);
         }
