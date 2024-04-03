@@ -1,6 +1,5 @@
 package com.shopping.service.impl;
 
-import com.shopping.constants.ShoppingConstants;
 import com.shopping.dao.ShoppingDao;
 import com.shopping.entity.ShoppingEntity;
 import com.shopping.exception.ShoppingCustomException;
@@ -12,13 +11,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import static com.shopping.constants.ShoppingConstants.ID_PREFIX;
 import static com.shopping.constants.ShoppingConstants.SHOPPING_ID_PREFIX;
+import static com.shopping.util.ShoppingUtil.dateToStringFormat;
+import static com.shopping.util.ShoppingUtil.prefixAppend;
+import static java.time.Instant.now;
 
 @Service
 public class ShoppingServiceImpl implements ShoppingService {
 
-    private static Integer counter = 0;
+    public static Integer counter = 0;
 
     @Autowired
     private ShoppingDao shoppingDao;
@@ -30,8 +31,8 @@ public class ShoppingServiceImpl implements ShoppingService {
         if (counter == 0) {
             try {
                 String maxIdTill = shoppingDao.findAll().stream().map(ShoppingEntity::getShoppingId)
-                        .max(Comparator.naturalOrder()).orElse(shoppingId + ID_PREFIX.getCode());
-                counter = Integer.parseInt(maxIdTill.substring(3));
+                        .max(Comparator.naturalOrder()).orElse(shoppingId + "0");
+                counter = Integer.parseInt(maxIdTill.substring(SHOPPING_ID_PREFIX.getCode().length()));
                 counter++;
             } catch (Exception e) {
                 ++counter;
@@ -40,14 +41,8 @@ public class ShoppingServiceImpl implements ShoppingService {
             ++counter;
         }
 
-        if (String.valueOf(counter).length() == 1) {
-            shoppingId.append(ID_PREFIX.getDescription()).append(counter);
-        } else if (String.valueOf(counter).length() == 2) {
-            shoppingId.append(ID_PREFIX.getCode()).append(counter);
-        } else {
-            shoppingId.append(counter);
-        }
-        return shoppingId.toString();
+        return prefixAppend(shoppingId, counter);
+
     }
 
     @Override
@@ -55,6 +50,8 @@ public class ShoppingServiceImpl implements ShoppingService {
 
         String shoppingId = generateShoppingId();
         shopping.setShoppingId(shoppingId);
+        shopping.setPurchaseTime(dateToStringFormat(now()));
+        shopping.setPurchaseModifyTime(dateToStringFormat(now()));
 
         Optional<ShoppingEntity> existing = shoppingDao.findById(shopping.getShoppingId());
 
@@ -100,6 +97,7 @@ public class ShoppingServiceImpl implements ShoppingService {
         shop.setCustomerEmail(shopping.getCustomerEmail());
         shop.setSellingPrice(shopping.getSellingPrice());
         shop.setBuyingPrice(shopping.getBuyingPrice());
+        shop.setPurchaseModifyTime(dateToStringFormat(now()));
 
         if (shop.getBuyingPrice() < shop.getSellingPrice()) {
             throw new ShoppingCustomException("INVALID_BALANCE", "buying balance is low");

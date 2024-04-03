@@ -20,4 +20,6 @@ public class ShoppingEntity {
     private String customerEmail;
     private int sellingPrice;
     private int buyingPrice;
+    private String purchaseTime;
+    private String purchaseModifyTime;
 }

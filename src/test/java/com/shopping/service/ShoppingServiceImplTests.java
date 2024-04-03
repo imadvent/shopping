@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.shopping.util.ShoppingUtil.isValidEmail;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -37,12 +38,12 @@ public class ShoppingServiceImplTests {
 
     @Test
     public void testIsValidEmail_ValidEmail() {
-        assertTrue(ShoppingService.isValidEmail(CUSTOMER_EMAIL));
+        assertTrue(isValidEmail(CUSTOMER_EMAIL));
     }
 
     @Test
     public void testIsValidEmail_InvalidEmail() {
-        assertFalse(ShoppingService.isValidEmail("test.example.com"));
+        assertFalse(isValidEmail("test.example.com"));
     }
 
     @Test

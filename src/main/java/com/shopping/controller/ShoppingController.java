@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.shopping.service.ShoppingService.isValidEmail;
+import static com.shopping.util.ShoppingUtil.isValidEmail;
 
 @RestController
 public class ShoppingController {
