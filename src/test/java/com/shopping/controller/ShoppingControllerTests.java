@@ -1,7 +1,7 @@
 package com.shopping.controller;
 
 import com.shopping.entity.ShoppingEntity;
-import com.shopping.service.impl.ShoppingServiceImpl;
+import com.shopping.service.ShoppingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ShoppingControllerTests {
@@ -29,7 +31,7 @@ public class ShoppingControllerTests {
 
 
     @Mock
-    private ShoppingServiceImpl shoppingServiceImpl;
+    private ShoppingService shoppingService;
 
     @InjectMocks
     private ShoppingController shoppingController;
@@ -110,7 +112,7 @@ public class ShoppingControllerTests {
         ShoppingEntity shoppingEntity = new ShoppingEntity();
         shoppingEntity.setShoppingId(SHOPPING_ID);
 
-        when(shoppingServiceImpl.view(SHOPPING_ID)).thenReturn(shoppingEntity);
+        when(shoppingService.view(SHOPPING_ID)).thenReturn(shoppingEntity);
 
         ResponseEntity<ShoppingEntity> response = shoppingController.read(SHOPPING_ID);
 
@@ -122,7 +124,7 @@ public class ShoppingControllerTests {
     public void testReadAllShoppingItems() {
         List<ShoppingEntity> shoppingList = Collections.singletonList(new ShoppingEntity());
 
-        when(shoppingServiceImpl.viewAll()).thenReturn(shoppingList);
+        when(shoppingService.viewAll()).thenReturn(shoppingList);
 
         List<ShoppingEntity> response = shoppingController.readAll();
 
@@ -132,9 +134,9 @@ public class ShoppingControllerTests {
     @Test
     public void testUpdateShoppingItem() {
         ShoppingEntity updatedShoppingEntity = new ShoppingEntity();
-        updatedShoppingEntity.setShoppingId(SHOPPING_ID);
+        updatedShoppingEntity.setProductName(PRODUCT_NAME);
 
-        when(shoppingServiceImpl.change(eq(SHOPPING_ID), any(ShoppingEntity.class))).thenReturn(updatedShoppingEntity);
+        when(shoppingService.change(eq(SHOPPING_ID), any(ShoppingEntity.class))).thenReturn(updatedShoppingEntity);
 
         ResponseEntity<ShoppingEntity> response = shoppingController.update(SHOPPING_ID, new ShoppingEntity());
 
