@@ -3,13 +3,10 @@ package com.shopping.controller;
 import com.shopping.entity.ShoppingEntity;
 import com.shopping.service.ShoppingService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -23,7 +20,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({SpringExtension.class, MockitoExtension.class})
 @WebMvcTest(ShoppingController.class)
 public class ShoppingControllerIntegrationTest {
 
@@ -41,11 +37,7 @@ public class ShoppingControllerIntegrationTest {
 
     @Test
     public void testCreateShoppingItem_Success() throws Exception {
-        ShoppingEntity shoppingEntity = new ShoppingEntity();
-        shoppingEntity.setProductName(PRODUCT_NAME);
-        shoppingEntity.setCustomerEmail(CUSTOMER_EMAIL);
-        shoppingEntity.setBuyingPrice(BUYING_PRICE);
-        shoppingEntity.setSellingPrice(SELLING_PRICE);
+        ShoppingEntity shoppingEntity = createShoppingEntity();
 
         when(shoppingService.insert(any(ShoppingEntity.class))).thenReturn(shoppingEntity);
 
@@ -74,7 +66,7 @@ public class ShoppingControllerIntegrationTest {
     @Test
     public void testCreateShoppingItem_InvalidProductName() throws Exception {
         ShoppingEntity shoppingEntity = new ShoppingEntity();
-        shoppingEntity.setProductName("");
+        shoppingEntity.setProductName(null);
         shoppingEntity.setCustomerEmail(CUSTOMER_EMAIL);
 
         when(shoppingService.insert(any(ShoppingEntity.class))).thenReturn(shoppingEntity);
@@ -171,7 +163,6 @@ public class ShoppingControllerIntegrationTest {
 
     @Test
     public void testDeleteShoppingItem() throws Exception {
-        ShoppingEntity deleteShopping = createShoppingEntity();
 
         doNothing().when(shoppingService).remove(SHOPPING_ID);
 

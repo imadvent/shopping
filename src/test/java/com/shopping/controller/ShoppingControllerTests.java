@@ -84,7 +84,7 @@ public class ShoppingControllerTests {
         ShoppingEntity shoppingEntity = new ShoppingEntity();
         shoppingEntity.setProductName(PRODUCT_NAME);
         shoppingEntity.setCustomerEmail(CUSTOMER_EMAIL);
-        shoppingEntity.setSellingPrice(0);
+        shoppingEntity.setSellingPrice(-50);
         shoppingEntity.setBuyingPrice(0);
 
         ResponseEntity<String> response = shoppingController.create(shoppingEntity);

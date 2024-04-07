@@ -51,7 +51,8 @@ public class ShoppingServiceImpl implements ShoppingService {
         String shoppingId = generateShoppingId();
         shopping.setShoppingId(shoppingId);
         shopping.setPurchaseTime(dateToStringFormat(now()));
-        shopping.setPurchaseModifyTime(dateToStringFormat(now()));
+        shopping.setPurchaseModifyTime("-");
+        shopping.setBalanceAmount(shopping.getBuyingPrice() - shopping.getSellingPrice());
 
         Optional<ShoppingEntity> existing = shoppingDao.findById(shopping.getShoppingId());
 
@@ -97,11 +98,11 @@ public class ShoppingServiceImpl implements ShoppingService {
         shop.setCustomerEmail(shopping.getCustomerEmail());
         shop.setSellingPrice(shopping.getSellingPrice());
         shop.setBuyingPrice(shopping.getBuyingPrice());
+        shop.setBalanceAmount(shopping.getBuyingPrice() - shopping.getSellingPrice());
         shop.setPurchaseModifyTime(dateToStringFormat(now()));
 
-        if (shop.getBuyingPrice() < shop.getSellingPrice()) {
+        if (shop.getBalanceAmount() < 0 || shop.getBuyingPrice() < shop.getSellingPrice()) {
             throw new ShoppingCustomException("INVALID_BALANCE", "buying balance is low");
-
         }
 
         shoppingDao.save(shop);

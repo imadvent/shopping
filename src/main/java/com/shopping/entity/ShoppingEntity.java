@@ -2,14 +2,11 @@ package com.shopping.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -17,11 +14,11 @@ public class ShoppingEntity {
 
     @Id
     private String shoppingId;
-    @NotNull(message = "Product name is mandatory")
     private String productName;
     private String customerEmail;
     private int sellingPrice;
     private int buyingPrice;
+    private int balanceAmount;
     private String purchaseTime;
     private String purchaseModifyTime;
 }
