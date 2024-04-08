@@ -7,8 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.shopping.constants.ShoppingConstants.EMAIL_REGEX;
-import static com.shopping.constants.ShoppingConstants.ID_PREFIX;
+import static com.shopping.constants.ShoppingConstants.*;
 
 public class ShoppingUtil {
 
@@ -34,4 +33,7 @@ public class ShoppingUtil {
         return formatter.format(instant);
     }
 
+    public static boolean isValidShoppingId(String shoppingId) {
+        return shoppingId != null && shoppingId.matches(SHOPPING_ID_REGEX.getCode());
+    }
 }

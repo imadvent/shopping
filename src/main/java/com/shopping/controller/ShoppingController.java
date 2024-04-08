@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.shopping.util.ShoppingUtil.isValidEmail;
+import static com.shopping.util.ShoppingUtil.isValidShoppingId;
 
 @RestController
 public class ShoppingController {
@@ -19,6 +20,10 @@ public class ShoppingController {
 
     @PostMapping(value = "/shopping")
     public ResponseEntity<String> create(@RequestBody ShoppingEntity shopping) {
+
+        if (shopping.getShoppingId() != null && !shopping.getShoppingId().isEmpty()) {
+            return ResponseEntity.badRequest().body("Should not enter Shopping ID");
+        }
 
         if (shopping.getProductName() == null || shopping.getProductName().isEmpty()) {
             return ResponseEntity.badRequest().body("Product name is mandatory");
@@ -41,7 +46,12 @@ public class ShoppingController {
     }
 
     @GetMapping(value = "/shopping/{shoppingId}")
-    public ResponseEntity<ShoppingEntity> read(@PathVariable("shoppingId") String shoppingId) {
+    public ResponseEntity<?> read(@PathVariable("shoppingId") String shoppingId) {
+
+        if (!isValidShoppingId(shoppingId)) {
+            return ResponseEntity.badRequest().body("Shopping item with ID " + shoppingId + " is invalid");
+        }
+
         return new ResponseEntity<>(shoppingService.view(shoppingId), HttpStatus.OK);
     }
 
@@ -52,12 +62,22 @@ public class ShoppingController {
     }
 
     @PutMapping(value = "/shopping/{shoppingId}")
-    public ResponseEntity<ShoppingEntity> update(@PathVariable("shoppingId") String shoppingId, @RequestBody ShoppingEntity shopping) {
+    public ResponseEntity<?> update(@PathVariable("shoppingId") String shoppingId, @RequestBody ShoppingEntity shopping) {
+
+        if (!isValidShoppingId(shoppingId)) {
+            return ResponseEntity.badRequest().body("Shopping item with ID " + shoppingId + " is invalid");
+        }
+
         return new ResponseEntity<>(shoppingService.change(shoppingId, shopping), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/shopping/{shoppingId}")
     public ResponseEntity<String> delete(@PathVariable("shoppingId") String shoppingId) {
+
+        if (!isValidShoppingId(shoppingId)) {
+            return ResponseEntity.badRequest().body("Shopping item with ID " + shoppingId + " is invalid");
+        }
+
         shoppingService.remove(shoppingId);
         return new ResponseEntity<>("Shopping item with given ID is deleted", HttpStatus.OK);
     }

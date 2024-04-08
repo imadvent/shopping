@@ -66,11 +66,12 @@ public class ShoppingServiceImpl implements ShoppingService {
 
     @Override
     public ShoppingEntity view(String shoppingId) {
+
         Optional<ShoppingEntity> single = shoppingDao.findById(shoppingId);
 
         if (single.isEmpty()) {
             throw new ShoppingCustomException("NO_SHOPPING_ID_EXIST",
-                    "The shopping item with given id " + shoppingId + " is not present");
+                    "The shopping item with ID " + shoppingId + " is not present");
         }
 
         return single.get();
@@ -113,7 +114,7 @@ public class ShoppingServiceImpl implements ShoppingService {
     public void remove(String shoppingId) {
         if (!shoppingDao.existsById(shoppingId)) {
             throw new ShoppingCustomException("SHOPPING_ITEM_NOT_FOUND",
-                    "Shopping item with id " + shoppingId + " not found");
+                    "Shopping item with ID " + shoppingId + " not found");
         }
         shoppingDao.deleteById(shoppingId);
     }

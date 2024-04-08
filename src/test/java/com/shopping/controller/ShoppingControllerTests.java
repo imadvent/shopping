@@ -56,6 +56,18 @@ public class ShoppingControllerTests {
     }
 
     @Test
+    public void testCreateShoppingItem_EmptyID() {
+        ShoppingEntity shoppingEntity = new ShoppingEntity();
+        shoppingEntity.setShoppingId(SHOPPING_ID);
+        shoppingEntity.setProductName(PRODUCT_NAME);
+
+        ResponseEntity<String> response = shoppingController.create(shoppingEntity);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Should not enter Shopping ID", response.getBody());
+    }
+
+    @Test
     public void testCreateShoppingItem_InvalidEmail() {
         ShoppingEntity shoppingEntity = new ShoppingEntity();
         shoppingEntity.setProductName(PRODUCT_NAME);
@@ -114,10 +126,22 @@ public class ShoppingControllerTests {
 
         when(shoppingService.view(SHOPPING_ID)).thenReturn(shoppingEntity);
 
-        ResponseEntity<ShoppingEntity> response = shoppingController.read(SHOPPING_ID);
+        ResponseEntity<?> response = shoppingController.read(SHOPPING_ID);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(shoppingEntity, response.getBody());
+    }
+
+    @Test
+    public void testReadShoppingItem_InvalidId() {
+        String invalidId = "INVALID";
+        ShoppingEntity shoppingEntity = new ShoppingEntity();
+        shoppingEntity.setShoppingId(invalidId);
+
+        ResponseEntity<?> response = shoppingController.read(invalidId);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Shopping item with ID " + invalidId + " is invalid", response.getBody());
     }
 
     @Test
@@ -138,10 +162,22 @@ public class ShoppingControllerTests {
 
         when(shoppingService.change(eq(SHOPPING_ID), any(ShoppingEntity.class))).thenReturn(updatedShoppingEntity);
 
-        ResponseEntity<ShoppingEntity> response = shoppingController.update(SHOPPING_ID, new ShoppingEntity());
+        ResponseEntity<?> response = shoppingController.update(SHOPPING_ID, new ShoppingEntity());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(updatedShoppingEntity, response.getBody());
+    }
+
+    @Test
+    public void testUpdateShoppingItem_InvalidId() {
+        String invalidId = "INVALID";
+        ShoppingEntity shoppingEntity = new ShoppingEntity();
+        shoppingEntity.setShoppingId(invalidId);
+
+        ResponseEntity<?> response = shoppingController.update(invalidId, new ShoppingEntity());
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Shopping item with ID " + invalidId + " is invalid", response.getBody());
     }
 
     @Test
@@ -150,5 +186,17 @@ public class ShoppingControllerTests {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Shopping item with given ID is deleted", response.getBody());
+    }
+
+    @Test
+    public void testDeleteShoppingItem_InvalidId() {
+        String invalidId = "INVALID";
+        ShoppingEntity shoppingEntity = new ShoppingEntity();
+        shoppingEntity.setShoppingId(invalidId);
+
+        ResponseEntity<?> response = shoppingController.delete(invalidId);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Shopping item with ID " + invalidId + " is invalid", response.getBody());
     }
 }

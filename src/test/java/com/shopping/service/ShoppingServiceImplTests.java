@@ -143,7 +143,6 @@ public class ShoppingServiceImplTests {
 
     @Test
     public void testRemove_ShoppingItemRemoved() {
-//        String shoppingId = "SHOPID001";
 
         when(shoppingDao.existsById(SHOPPING_ID)).thenReturn(true);
 
