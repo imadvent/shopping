@@ -36,4 +36,13 @@ public class ShoppingUtil {
     public static boolean isValidShoppingId(String shoppingId) {
         return shoppingId != null && shoppingId.matches(SHOPPING_ID_REGEX.getCode());
     }
+
+    public static String extractName(String email) {
+        int atIndex = email.indexOf('@');
+        if (atIndex != -1) {
+            return email.substring(0, atIndex);
+        } else {
+            return "Invalid Email";
+        }
+    }
 }

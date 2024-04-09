@@ -13,12 +13,13 @@ import static com.shopping.util.ShoppingUtil.isValidEmail;
 import static com.shopping.util.ShoppingUtil.isValidShoppingId;
 
 @RestController
+@RequestMapping(value = "/shopping")
 public class ShoppingController {
 
     @Autowired
     private ShoppingService shoppingService;
 
-    @PostMapping(value = "/shopping")
+    @PostMapping
     public ResponseEntity<String> create(@RequestBody ShoppingEntity shopping) {
 
         if (shopping.getShoppingId() != null && !shopping.getShoppingId().isEmpty()) {
@@ -45,7 +46,7 @@ public class ShoppingController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Shopping item saved successfully");
     }
 
-    @GetMapping(value = "/shopping/{shoppingId}")
+    @GetMapping(value = "/{shoppingId}")
     public ResponseEntity<?> read(@PathVariable("shoppingId") String shoppingId) {
 
         if (!isValidShoppingId(shoppingId)) {
@@ -55,13 +56,24 @@ public class ShoppingController {
         return new ResponseEntity<>(shoppingService.view(shoppingId), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/shopping")
+    @GetMapping(value = "/product")
+    public ResponseEntity<List<ShoppingEntity>> readByProductName(@RequestParam("productName") String productName) {
+        return new ResponseEntity<>(shoppingService.viewByProductName(productName), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/custprod")
+    public ResponseEntity<List<ShoppingEntity>> readByCustomerNameorProductName
+            (@RequestParam("customerName") String customerName, @RequestParam("productName") String productName) {
+        return new ResponseEntity<>(shoppingService.viewByCustomerNameOrProductName(customerName, productName), HttpStatus.OK);
+    }
+
+    @GetMapping
     public List<ShoppingEntity> readAll() {
         ResponseEntity.ok();
         return shoppingService.viewAll();
     }
 
-    @PutMapping(value = "/shopping/{shoppingId}")
+    @PutMapping(value = "/{shoppingId}")
     public ResponseEntity<?> update(@PathVariable("shoppingId") String shoppingId, @RequestBody ShoppingEntity shopping) {
 
         if (!isValidShoppingId(shoppingId)) {
@@ -71,7 +83,17 @@ public class ShoppingController {
         return new ResponseEntity<>(shoppingService.change(shoppingId, shopping), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/shopping/{shoppingId}")
+    @PutMapping(value = "/queryupdate")
+    public ResponseEntity<?> updateWithQuery(@RequestParam("shoppingId") String shoppingId, @RequestBody ShoppingEntity shopping) {
+
+        if (!isValidShoppingId(shoppingId)) {
+            return ResponseEntity.badRequest().body("Shopping item with ID " + shoppingId + " is invalid");
+        }
+
+        return new ResponseEntity<>(shoppingService.changeByQuery(shoppingId, shopping), HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/{shoppingId}")
     public ResponseEntity<String> delete(@PathVariable("shoppingId") String shoppingId) {
 
         if (!isValidShoppingId(shoppingId)) {
