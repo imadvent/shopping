@@ -2,7 +2,7 @@ package com.shopping.service;
 
 import com.shopping.dao.ShoppingDao;
 import com.shopping.entity.ShoppingEntity;
-import com.shopping.exception.ShoppingCustomException;
+import com.shopping.exception.ShoppingCustomNotFoundException;
 import com.shopping.service.impl.ShoppingServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,7 +73,7 @@ public class ShoppingServiceImplTests {
 
         when(shoppingDao.findById(SHOPPING_ID)).thenReturn(Optional.of(shoppingEntity));
 
-        assertThrows(ShoppingCustomException.class, () -> shoppingServiceImpl.insert(shoppingEntity));
+        assertThrows(ShoppingCustomNotFoundException.class, () -> shoppingServiceImpl.insert(shoppingEntity));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class ShoppingServiceImplTests {
     public void testView_ShoppingItemNotFound() {
         when(shoppingDao.findById(SHOPPING_ID)).thenReturn(Optional.empty());
 
-        assertThrows(ShoppingCustomException.class, () -> shoppingServiceImpl.view(SHOPPING_ID));
+        assertThrows(ShoppingCustomNotFoundException.class, () -> shoppingServiceImpl.view(SHOPPING_ID));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class ShoppingServiceImplTests {
     public void testViewAll_NoShoppingItemsFound() {
         when(shoppingDao.findAll()).thenReturn(new ArrayList<>());
 
-        assertThrows(ShoppingCustomException.class, () -> shoppingServiceImpl.viewAll());
+        assertThrows(ShoppingCustomNotFoundException.class, () -> shoppingServiceImpl.viewAll());
     }
 
     @Test
@@ -138,7 +138,7 @@ public class ShoppingServiceImplTests {
     public void testChange_ShoppingItemNotFound() {
         when(shoppingDao.findById(SHOPPING_ID)).thenReturn(Optional.empty());
 
-        assertThrows(ShoppingCustomException.class, () -> shoppingServiceImpl.change(SHOPPING_ID, new ShoppingEntity()));
+        assertThrows(ShoppingCustomNotFoundException.class, () -> shoppingServiceImpl.change(SHOPPING_ID, new ShoppingEntity()));
     }
 
     @Test
@@ -157,7 +157,7 @@ public class ShoppingServiceImplTests {
 
         when(shoppingDao.existsById(shoppingId)).thenReturn(false);
 
-        assertThrows(ShoppingCustomException.class, () -> shoppingServiceImpl.remove(shoppingId));
+        assertThrows(ShoppingCustomNotFoundException.class, () -> shoppingServiceImpl.remove(shoppingId));
     }
 }
 

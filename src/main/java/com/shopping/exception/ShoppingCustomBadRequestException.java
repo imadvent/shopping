@@ -3,14 +3,12 @@ package com.shopping.exception;
 import lombok.Getter;
 
 @Getter
-public class ShoppingCustomException extends RuntimeException {
+public class ShoppingCustomBadRequestException extends RuntimeException {
 
     private final String errorCode;
 
-    public ShoppingCustomException(String errorCode, String errorDescription) {
+    public ShoppingCustomBadRequestException(String errorCode, String errorDescription) {
         super(errorDescription);
         this.errorCode = errorCode;
     }
-
-
 }

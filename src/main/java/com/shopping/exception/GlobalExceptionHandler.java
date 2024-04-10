@@ -16,12 +16,20 @@ public class GlobalExceptionHandler {
 
     private final static Logger logger = LogManager.getLogger(ShoppingServiceImpl.class);
 
-    @ExceptionHandler(ShoppingCustomException.class)
-    public ResponseEntity<Map<String, String>> handleCustomException(ShoppingCustomException ex) {
+    @ExceptionHandler(ShoppingCustomNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleCustomNotFoundException(ShoppingCustomNotFoundException ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put(ex.getErrorCode(), ex.getMessage());
         logger.error(ex.getMessage(), ex);
         return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ShoppingCustomBadRequestException.class)
+    public ResponseEntity<Map<String, String>> handleCustomBadRequestException(ShoppingCustomBadRequestException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put(ex.getErrorCode(), ex.getMessage());
+        logger.error(ex.getMessage(), ex);
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
 }

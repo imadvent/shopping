@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.shopping.util.ShoppingUtil.isValidEmail;
-import static com.shopping.util.ShoppingUtil.isValidShoppingId;
 
 @RestController
 @RequestMapping(value = "/shopping")
@@ -49,10 +48,6 @@ public class ShoppingController {
     @GetMapping(value = "/{shoppingId}")
     public ResponseEntity<?> read(@PathVariable("shoppingId") String shoppingId) {
 
-        if (!isValidShoppingId(shoppingId)) {
-            return ResponseEntity.badRequest().body("Shopping item with ID " + shoppingId + " is invalid");
-        }
-
         return new ResponseEntity<>(shoppingService.view(shoppingId), HttpStatus.OK);
     }
 
@@ -76,29 +71,17 @@ public class ShoppingController {
     @PutMapping(value = "/{shoppingId}")
     public ResponseEntity<?> update(@PathVariable("shoppingId") String shoppingId, @RequestBody ShoppingEntity shopping) {
 
-        if (!isValidShoppingId(shoppingId)) {
-            return ResponseEntity.badRequest().body("Shopping item with ID " + shoppingId + " is invalid");
-        }
-
         return new ResponseEntity<>(shoppingService.change(shoppingId, shopping), HttpStatus.OK);
     }
 
     @PutMapping(value = "/queryupdate")
     public ResponseEntity<?> updateWithQuery(@RequestParam("shoppingId") String shoppingId, @RequestBody ShoppingEntity shopping) {
 
-        if (!isValidShoppingId(shoppingId)) {
-            return ResponseEntity.badRequest().body("Shopping item with ID " + shoppingId + " is invalid");
-        }
-
         return new ResponseEntity<>(shoppingService.changeByQuery(shoppingId, shopping), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{shoppingId}")
     public ResponseEntity<String> delete(@PathVariable("shoppingId") String shoppingId) {
-
-        if (!isValidShoppingId(shoppingId)) {
-            return ResponseEntity.badRequest().body("Shopping item with ID " + shoppingId + " is invalid");
-        }
 
         shoppingService.remove(shoppingId);
         return new ResponseEntity<>("Shopping item with given ID is deleted", HttpStatus.OK);
