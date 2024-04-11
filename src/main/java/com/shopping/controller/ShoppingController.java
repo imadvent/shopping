@@ -57,7 +57,7 @@ public class ShoppingController {
     }
 
     @GetMapping(value = "/custprod")
-    public ResponseEntity<List<ShoppingEntity>> readByCustomerNameorProductName
+    public ResponseEntity<List<ShoppingEntity>> readByCustomerNameOrProductName
             (@RequestParam("customerName") String customerName, @RequestParam("productName") String productName) {
         return new ResponseEntity<>(shoppingService.viewByCustomerNameOrProductName(customerName, productName), HttpStatus.OK);
     }

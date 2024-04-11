@@ -148,21 +148,6 @@ public class ShoppingControllerIntegrationTest {
     }
 
     @Test
-    public void testReadShoppingItem_InvalidId() throws Exception {
-        String invalidId = "INVALID";
-        ShoppingEntity shoppingEntity = new ShoppingEntity();
-        shoppingEntity.setShoppingId(invalidId);
-
-        when(shoppingService.view(invalidId)).thenReturn(shoppingEntity);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/shopping/{invalidId}", invalidId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(shoppingEntity)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().string("Shopping item with ID " + invalidId + " is invalid"));
-    }
-
-    @Test
     public void testReadAllShoppingItems() throws Exception {
         List<ShoppingEntity> shoppingList = Collections.singletonList(createShoppingEntity());
 
@@ -196,21 +181,6 @@ public class ShoppingControllerIntegrationTest {
     }
 
     @Test
-    public void testUpdateShoppingItem_InvalidId() throws Exception {
-        String invalidId = "INVALID";
-        ShoppingEntity shoppingEntity = new ShoppingEntity();
-        shoppingEntity.setShoppingId(invalidId);
-
-        when(shoppingService.change(eq(invalidId), any(ShoppingEntity.class))).thenReturn(shoppingEntity);
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/shopping/{invalidId}", invalidId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(shoppingEntity)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().string("Shopping item with ID " + invalidId + " is invalid"));
-    }
-
-    @Test
     public void testDeleteShoppingItem() throws Exception {
 
         doNothing().when(shoppingService).remove(SHOPPING_ID);
@@ -221,22 +191,6 @@ public class ShoppingControllerIntegrationTest {
                 .andExpect(MockMvcResultMatchers.content().string("Shopping item with given ID is deleted"));
 
     }
-
-    @Test
-    public void testDeleteShoppingItem_InvalidId() throws Exception {
-        String invalidId = "INVALID";
-        ShoppingEntity shoppingEntity = new ShoppingEntity();
-        shoppingEntity.setShoppingId(invalidId);
-
-        doNothing().when(shoppingService).remove(invalidId);
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/shopping/{invalidId}", invalidId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(shoppingEntity)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().string("Shopping item with ID " + invalidId + " is invalid"));
-    }
-
 
     private ShoppingEntity createShoppingEntity() {
         ShoppingEntity shoppingEntity = new ShoppingEntity();

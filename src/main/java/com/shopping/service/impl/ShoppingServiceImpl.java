@@ -71,7 +71,7 @@ public class ShoppingServiceImpl implements ShoppingService {
 
         Optional<ShoppingEntity> single = shoppingDao.findById(shoppingId);
 
-        if (!isValidShoppingId(shoppingId)) {
+        if (isInvalidShoppingId(shoppingId)) {
             throw new ShoppingCustomBadRequestException("INVALID_SHOPPING_ID", "Shopping item with ID " + shoppingId + " is invalid");
         }
 
@@ -128,7 +128,7 @@ public class ShoppingServiceImpl implements ShoppingService {
     @Override
     public ShoppingEntity change(String shoppingId, ShoppingEntity shopping) {
 
-        if (!isValidShoppingId(shoppingId)) {
+        if (isInvalidShoppingId(shoppingId)) {
             throw new ShoppingCustomBadRequestException("INVALID_SHOPPING_ID", "Shopping item with ID " + shoppingId + " is invalid");
         }
 
@@ -171,7 +171,7 @@ public class ShoppingServiceImpl implements ShoppingService {
             throw new ShoppingCustomBadRequestException("EMPTY_SHOPPING_ID", "Shopping ID should not be blank");
         }
 
-        if (!isValidShoppingId(shoppingId)) {
+        if (isInvalidShoppingId(shoppingId)) {
             throw new ShoppingCustomBadRequestException("INVALID_SHOPPING_ID", "Shopping item with ID " + shoppingId + " is invalid");
         }
 
@@ -206,7 +206,7 @@ public class ShoppingServiceImpl implements ShoppingService {
     @Override
     public void remove(String shoppingId) {
 
-        if (!isValidShoppingId(shoppingId)) {
+        if (isInvalidShoppingId(shoppingId)) {
             throw new ShoppingCustomBadRequestException("INVALID_SHOPPING_ID", "Shopping item with ID " + shoppingId + " is invalid");
         }
 

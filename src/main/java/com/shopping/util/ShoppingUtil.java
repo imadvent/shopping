@@ -33,8 +33,8 @@ public class ShoppingUtil {
         return formatter.format(instant);
     }
 
-    public static boolean isValidShoppingId(String shoppingId) {
-        return shoppingId != null && shoppingId.matches(SHOPPING_ID_REGEX.getCode());
+    public static boolean isInvalidShoppingId(String shoppingId) {
+        return shoppingId != null && !shoppingId.matches(SHOPPING_ID_REGEX.getCode());
     }
 
     public static String extractName(String email) {
