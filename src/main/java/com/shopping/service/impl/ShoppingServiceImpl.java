@@ -51,10 +51,6 @@ public class ShoppingServiceImpl implements ShoppingService {
 
         String shoppingId = generateShoppingId();
         shopping.setShoppingId(shoppingId);
-        shopping.setCustomerName(extractName(shopping.getCustomerEmail()));
-        shopping.setPurchaseTime(dateToStringFormat(now()));
-        shopping.setPurchaseModifyTime("-");
-        shopping.setBalanceAmount(shopping.getBuyingPrice() - shopping.getSellingPrice());
 
         Optional<ShoppingEntity> existing = shoppingDao.findById(shopping.getShoppingId());
 
@@ -62,6 +58,11 @@ public class ShoppingServiceImpl implements ShoppingService {
             throw new ShoppingCustomBadRequestException("DUPLICATE_SHOPPING_ID", "Shopping item with given id " +
                     shopping.getShoppingId() + " already exist");
         }
+
+        shopping.setCustomerName(extractName(shopping.getCustomerEmail()));
+        shopping.setPurchaseTime(dateToStringFormat(now()));
+        shopping.setPurchaseModifyTime("-");
+        shopping.setBalanceAmount(shopping.getBuyingPrice() - shopping.getSellingPrice());
 
         return shoppingDao.save(shopping);
     }
