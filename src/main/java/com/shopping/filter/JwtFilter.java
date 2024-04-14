@@ -1,7 +1,7 @@
 package com.shopping.filter;
 
 import com.shopping.service.CustomUserDetailsService;
-import com.shopping.service.impl.JwtServiceImpl;
+import com.shopping.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtServiceImpl jwtService;
+    private JwtService jwtService;
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
