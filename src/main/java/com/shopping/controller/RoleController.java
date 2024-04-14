@@ -1,7 +1,7 @@
 package com.shopping.controller;
 
 import com.shopping.entity.RoleEntity;
-import com.shopping.service.impl.RoleServiceImpl;
+import com.shopping.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +15,7 @@ import java.util.List;
 public class RoleController {
 
     @Autowired
-    private RoleServiceImpl roleService;
+    private RoleService roleService;
 
     @PostMapping(value = "/role")
     public RoleEntity addRole(@RequestBody RoleEntity userInfo) {
