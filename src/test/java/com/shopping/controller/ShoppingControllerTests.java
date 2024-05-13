@@ -26,10 +26,8 @@ public class ShoppingControllerTests {
     private static final String SHOPPING_ID = "SHOPID001";
     private static final String PRODUCT_NAME = "Product 1";
     private static final String CUSTOMER_EMAIL = "you@example.com";
-
     private static final int SELLING_PRICE = 250;
     private static final int BUYING_PRICE = 300;
-
 
     @Mock
     private ShoppingService shoppingService;
