@@ -15,7 +15,7 @@ import java.util.Optional;
 
 import static com.shopping.constants.ShoppingConstants.SHOPPING_ID_PREFIX;
 import static com.shopping.util.ShoppingUtil.*;
-import static java.time.Instant.now;
+import static java.time.LocalDateTime.now;
 
 @Service
 public class ShoppingServiceImpl implements ShoppingService {

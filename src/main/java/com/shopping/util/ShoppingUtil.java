@@ -1,8 +1,6 @@
 package com.shopping.util;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,9 +26,10 @@ public class ShoppingUtil {
         return id.toString();
     }
 
-    public static String dateToStringFormat(Instant instant) {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.from(ZoneOffset.UTC));
-        return formatter.format(instant);
+    public static String dateToStringFormat(LocalDateTime localDateTime) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        return formatter.format(localDateTime);
     }
 
     public static boolean isInvalidShoppingId(String shoppingId) {
