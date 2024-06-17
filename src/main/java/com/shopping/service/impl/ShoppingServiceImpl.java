@@ -1,6 +1,8 @@
 package com.shopping.service.impl;
 
 import com.shopping.dao.ShoppingDao;
+import com.shopping.dto.ShoppingRequest;
+import com.shopping.dto.ShoppingResponse;
 import com.shopping.entity.ShoppingEntity;
 import com.shopping.exception.ShoppingCustomBadRequestException;
 import com.shopping.exception.ShoppingCustomNotFoundException;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -47,29 +50,59 @@ public class ShoppingServiceImpl implements ShoppingService {
     }
 
     @Override
-    public ShoppingEntity insert(ShoppingEntity shopping) {
+    public ShoppingResponse insert(ShoppingRequest shoppingRequest) {
+
+        ShoppingResponse shoppingResponse = new ShoppingResponse();
+        ShoppingEntity shoppingEntity = new ShoppingEntity();
+
+        shoppingRequestMapper(shoppingRequest, shoppingEntity);
+
+        if (shoppingEntity.getShoppingId() != null && !shoppingEntity.getShoppingId().isEmpty()) {
+            throw new ShoppingCustomBadRequestException("SHOPPING_ID_DETECTED", "Should not enter Shopping ID");
+        }
+
+        if (shoppingEntity.getProductName() == null || shoppingEntity.getProductName().isEmpty()) {
+            throw new ShoppingCustomBadRequestException("EMPTY_PRODUCT_NAME", "Product name is mandatory");
+        }
+
+        if (!isValidEmail(shoppingEntity.getCustomerEmail())) {
+            throw new ShoppingCustomBadRequestException("EMAIL_INVALID", "Invalid customer email");
+        }
+
+        if (shoppingEntity.getBuyingPrice() <= 0 || shoppingEntity.getSellingPrice() <= 0) {
+            throw new ShoppingCustomBadRequestException("INVALID_COST", "Value should be non negative");
+        }
+
+        if (shoppingEntity.getBuyingPrice() < shoppingEntity.getSellingPrice()) {
+            throw new ShoppingCustomBadRequestException("INSUFFICIENT_BALANCE", "Insufficient balance");
+        }
 
         String shoppingId = generateShoppingId();
-        shopping.setShoppingId(shoppingId);
+        shoppingEntity.setShoppingId(shoppingId);
 
-        Optional<ShoppingEntity> existing = shoppingDao.findById(shopping.getShoppingId());
+        Optional<ShoppingEntity> existing = shoppingDao.findById(shoppingEntity.getShoppingId());
 
         if (existing.isPresent()) {
             throw new ShoppingCustomBadRequestException("DUPLICATE_SHOPPING_ID", "Shopping item with given id " +
-                    shopping.getShoppingId() + " already exist");
+                    shoppingEntity.getShoppingId() + " already exist");
         }
 
-        shopping.setCustomerName(extractName(shopping.getCustomerEmail()));
-        shopping.setPurchaseTime(dateToStringFormat(now()));
-        shopping.setPurchaseModifyTime("-");
-        shopping.setBalanceAmount(shopping.getBuyingPrice() - shopping.getSellingPrice());
+        shoppingEntity.setCustomerName(extractName(shoppingEntity.getCustomerEmail()));
+        shoppingEntity.setPurchaseTime(dateToStringFormat(now()));
+        shoppingEntity.setPurchaseModifyTime("-");
+        shoppingEntity.setBalanceAmount(shoppingEntity.getBuyingPrice() - shoppingEntity.getSellingPrice());
 
-        return shoppingDao.save(shopping);
+        shoppingDao.save(shoppingEntity);
+
+        shoppingResponseMapper(shoppingEntity, shoppingResponse);
+
+        return shoppingResponse;
     }
 
     @Override
-    public ShoppingEntity view(String shoppingId) {
+    public ShoppingResponse view(String shoppingId) {
 
+        ShoppingResponse shoppingResponse = new ShoppingResponse();
         Optional<ShoppingEntity> single = shoppingDao.findById(shoppingId);
 
         if (isInvalidShoppingId(shoppingId)) {
@@ -81,10 +114,16 @@ public class ShoppingServiceImpl implements ShoppingService {
                     "The shopping item with ID " + shoppingId + " is not present");
         }
 
-        return single.get();
+        ShoppingEntity shoppingEntity = single.get();
+
+        shoppingResponseMapper(shoppingEntity, shoppingResponse);
+
+        return shoppingResponse;
     }
 
-    public List<ShoppingEntity> viewByProductName(String productName) {
+    public List<ShoppingResponse> viewByProductName(String productName) {
+
+        List<ShoppingResponse> shoppingResponses = new ArrayList<>();
 
         if (productName == null || productName.isEmpty()) {
             throw new ShoppingCustomBadRequestException("INVALID_PRODUCT_NAME", "Product name is mandatory");
@@ -97,10 +136,18 @@ public class ShoppingServiceImpl implements ShoppingService {
                     "The product with name " + productName + " is not present");
         }
 
-        return singleProduct;
+        singleProduct.forEach(single -> {
+            ShoppingResponse shoppingResponse = new ShoppingResponse();
+            shoppingResponseMapper(single, shoppingResponse);
+
+            shoppingResponses.add(shoppingResponse);
+        });
+        return shoppingResponses;
     }
 
-    public List<ShoppingEntity> viewByCustomerNameOrProductName(String customerName, String productName) {
+    public List<ShoppingResponse> viewByCustomerNameOrProductName(String customerName, String productName) {
+
+        List<ShoppingResponse> shoppingResponseList = new ArrayList<>();
 
         if (customerName.isBlank() && customerName.isEmpty() && productName.isBlank() && productName.isEmpty()) {
             throw new ShoppingCustomBadRequestException("INVALID_PRODUCT_AND_CUSTOMER_NAME", "Product or customer name is mandatory");
@@ -113,21 +160,39 @@ public class ShoppingServiceImpl implements ShoppingService {
                     "The products with name " + customerName + " or product name " + productName + " are not present");
         }
 
-        return products;
+        products.forEach(custProd -> {
+            ShoppingResponse shoppingResponse = new ShoppingResponse();
+            shoppingResponseMapper(custProd, shoppingResponse);
+
+            shoppingResponseList.add(shoppingResponse);
+        });
+
+        return shoppingResponseList;
     }
 
     @Override
-    public List<ShoppingEntity> viewAll() {
+    public List<ShoppingResponse> viewAll() {
+
+        List<ShoppingResponse> responses = new ArrayList<>();
         List<ShoppingEntity> every = shoppingDao.findAll();
 
         if (every.isEmpty()) {
             throw new ShoppingCustomNotFoundException("NO_SHOPPING_RECORDS", "Shopping list is empty");
         }
-        return every;
+
+        every.forEach(everyList -> {
+            ShoppingResponse shoppingResponse = new ShoppingResponse();
+            shoppingResponseMapper(everyList, shoppingResponse);
+
+            responses.add(shoppingResponse);
+        });
+        return responses;
     }
 
     @Override
-    public ShoppingEntity change(String shoppingId, ShoppingEntity shopping) {
+    public ShoppingResponse change(String shoppingId, ShoppingRequest shoppingRequest) {
+
+        ShoppingResponse shoppingResponse = new ShoppingResponse();
 
         if (isInvalidShoppingId(shoppingId)) {
             throw new ShoppingCustomBadRequestException("INVALID_SHOPPING_ID", "Shopping item with ID " + shoppingId + " is invalid");
@@ -140,33 +205,35 @@ public class ShoppingServiceImpl implements ShoppingService {
         }
 
         ShoppingEntity shop = exist.get();
-        shop.setProductName(shopping.getProductName());
+
+        shoppingRequestMapper(shoppingRequest, shop);
+
         shop.setCustomerName(extractName(shop.getCustomerEmail()));
-        shop.setCustomerEmail(shopping.getCustomerEmail());
-        shop.setSellingPrice(shopping.getSellingPrice());
-        shop.setBuyingPrice(shopping.getBuyingPrice());
-        shop.setBalanceAmount(shopping.getBuyingPrice() - shopping.getSellingPrice());
+        shop.setBalanceAmount(shoppingRequest.getBuyingPrice() - shoppingRequest.getSellingPrice());
         shop.setPurchaseModifyTime(dateToStringFormat(now()));
 
         if (shop.getBalanceAmount() < 0 || shop.getBuyingPrice() < shop.getSellingPrice()) {
             throw new ShoppingCustomBadRequestException("INVALID_BALANCE", "buying balance is low");
         }
 
-        if (shopping.getProductName() == null || shopping.getProductName().isEmpty()) {
+        if (shoppingRequest.getProductName() == null || shoppingRequest.getProductName().isEmpty()) {
             throw new ShoppingCustomBadRequestException("PRODUCT_NAME_MANDATORY", "Product name is mandatory");
         }
 
-        if (!isValidEmail(shopping.getCustomerEmail())) {
+        if (!isValidEmail(shoppingRequest.getCustomerEmail())) {
             throw new ShoppingCustomBadRequestException("INVALID_EMAIL", "Entered email is invalid");
         }
 
         shoppingDao.save(shop);
-        return shop;
+        shoppingResponseMapper(shop, shoppingResponse);
+        return shoppingResponse;
     }
 
     @Override
     @Transactional
-    public ShoppingEntity changeByQuery(String shoppingId, ShoppingEntity shopping) {
+    public ShoppingResponse changeByQuery(String shoppingId, ShoppingRequest shopping) {
+
+        ShoppingResponse shoppingResponse = new ShoppingResponse();
 
         if (shoppingId.isBlank() && shoppingId.isEmpty()) {
             throw new ShoppingCustomBadRequestException("EMPTY_SHOPPING_ID", "Shopping ID should not be blank");
@@ -190,18 +257,22 @@ public class ShoppingServiceImpl implements ShoppingService {
             throw new ShoppingCustomBadRequestException("INVALID_EMAIL", "Entered email is invalid");
         }
 
-        shopping.setCustomerName(extractName(shopping.getCustomerEmail()));
-        shopping.setBalanceAmount(shopping.getBuyingPrice() - shopping.getSellingPrice());
+        ShoppingEntity shoppingEntity = exist.get();
 
-        shoppingDao.updateWithQuery(shoppingId, shopping.getProductName(), shopping.getCustomerName(), shopping.getCustomerEmail(),
-                shopping.getSellingPrice(), shopping.getBuyingPrice(), shopping.getBalanceAmount(), dateToStringFormat(now()));
+        shoppingRequestMapper(shopping, shoppingEntity);
+
+        shoppingEntity.setCustomerName(extractName(shopping.getCustomerEmail()));
+        shoppingEntity.setBalanceAmount(shopping.getBuyingPrice() - shopping.getSellingPrice());
+        shoppingEntity.setPurchaseModifyTime(dateToStringFormat(now()));
+        shoppingDao.updateWithQuery(shoppingId, shopping.getProductName(), shoppingEntity.getCustomerName(), shopping.getCustomerEmail(),
+                shopping.getSellingPrice(), shopping.getBuyingPrice(), shoppingEntity.getBalanceAmount(), shoppingEntity.getPurchaseModifyTime());
 
         if (shopping.getBuyingPrice() < shopping.getSellingPrice()) {
             throw new ShoppingCustomBadRequestException("INVALID_BALANCE", "Buying price is less than selling price");
         }
 
-        return shoppingDao.findById(shoppingId)
-                .orElseThrow(() -> new ShoppingCustomNotFoundException("NO_SHOPPING_RECORDS", "Shopping item of ID " + shoppingId + " is empty"));
+        shoppingResponseMapper(shoppingEntity, shoppingResponse);
+        return shoppingResponse;
     }
 
     @Override

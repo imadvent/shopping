@@ -1,5 +1,12 @@
 package com.shopping.util;
 
+import com.shopping.dto.RoleRequest;
+import com.shopping.dto.RoleResponse;
+import com.shopping.dto.ShoppingRequest;
+import com.shopping.dto.ShoppingResponse;
+import com.shopping.entity.RoleEntity;
+import com.shopping.entity.ShoppingEntity;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
@@ -43,5 +50,43 @@ public class ShoppingUtil {
         } else {
             return "Invalid Email";
         }
+    }
+
+    public static void shoppingRequestMapper(ShoppingRequest shoppingRequest, ShoppingEntity shopping) {
+
+        shopping.setProductName(shoppingRequest.getProductName());
+        shopping.setCustomerEmail(shoppingRequest.getCustomerEmail());
+        shopping.setBuyingPrice(shoppingRequest.getBuyingPrice());
+        shopping.setSellingPrice(shoppingRequest.getSellingPrice());
+    }
+
+    public static void shoppingResponseMapper(ShoppingEntity shopping, ShoppingResponse shoppingResponse) {
+
+        shoppingResponse.setShoppingId(shopping.getShoppingId());
+        shoppingResponse.setProductName(shopping.getProductName());
+        shoppingResponse.setCustomerEmail(shopping.getCustomerEmail());
+        shoppingResponse.setBuyingPrice(shopping.getBuyingPrice());
+        shoppingResponse.setSellingPrice(shopping.getSellingPrice());
+        shoppingResponse.setBalanceAmount(shopping.getBalanceAmount());
+        shoppingResponse.setCustomerName(shopping.getCustomerName());
+        shoppingResponse.setPurchaseTime(shopping.getPurchaseTime());
+        shoppingResponse.setPurchaseModifyTime(shopping.getPurchaseModifyTime());
+    }
+
+    public static void roleRequestMapper(RoleRequest roleRequest, RoleEntity roleEntity) {
+
+        roleEntity.setRoleUserName(roleRequest.getRoleUserName());
+        roleEntity.setPassword(roleRequest.getPassword());
+        roleEntity.setRole(roleRequest.getRole());
+        roleEntity.setEmail(roleRequest.getEmail());
+    }
+
+    public static void roleResponseMapper(RoleEntity roleEntity, RoleResponse roleResponse) {
+
+        roleResponse.setRoleId(roleEntity.getRoleId());
+        roleResponse.setRoleUserName(roleEntity.getRoleUserName());
+        roleResponse.setPassword(roleEntity.getPassword());
+        roleResponse.setRole(roleEntity.getRole());
+        roleResponse.setEmail(roleEntity.getEmail());
     }
 }
