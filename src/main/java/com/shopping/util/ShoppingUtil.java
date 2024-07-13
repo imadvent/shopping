@@ -22,17 +22,6 @@ public class ShoppingUtil {
         return match.matches();
     }
 
-    public static String prefixAppend(StringBuilder id, int count) {
-        if (String.valueOf(count).length() == 1) {
-            id.append(ID_PREFIX.getDescription()).append(count);
-        } else if (String.valueOf(count).length() == 2) {
-            id.append(ID_PREFIX.getCode()).append(count);
-        } else {
-            id.append(count);
-        }
-        return id.toString();
-    }
-
     public static String dateToStringFormat(LocalDateTime localDateTime) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
@@ -50,6 +39,33 @@ public class ShoppingUtil {
         } else {
             return "Invalid Email";
         }
+    }
+
+    public static String extractTime(String purchaseTime) {
+
+        int atIndex = purchaseTime.indexOf(" ");
+        if (atIndex != -1) {
+            return purchaseTime.substring(atIndex);
+        } else {
+            return "Invalid Purchase Time";
+        }
+    }
+
+    public static String extractDate(String purchaseTime) {
+        int atIndex = purchaseTime.indexOf(" ");
+        if (atIndex != -1) {
+            return purchaseTime.substring(0, atIndex);
+        } else {
+            return "Invalid Purchase Date";
+        }
+    }
+
+    public static boolean isValidDate(String fromDate, String toDate) {
+        Pattern pattern = Pattern.compile(DATE_REGEX.getCode());
+        Matcher fromMatch = pattern.matcher(fromDate);
+        Matcher toMatch = pattern.matcher(toDate);
+
+        return fromMatch.matches() && toMatch.matches();
     }
 
     public static void shoppingRequestMapper(ShoppingRequest shoppingRequest, ShoppingEntity shopping) {
@@ -70,7 +86,9 @@ public class ShoppingUtil {
         shoppingResponse.setBalanceAmount(shopping.getBalanceAmount());
         shoppingResponse.setCustomerName(shopping.getCustomerName());
         shoppingResponse.setPurchaseTime(shopping.getPurchaseTime());
+        shoppingResponse.setPurchaseDate(shopping.getPurchaseDate());
         shoppingResponse.setPurchaseModifyTime(shopping.getPurchaseModifyTime());
+        shoppingResponse.setPurchaseModifyDate(shopping.getPurchaseModifyDate());
     }
 
     public static void roleRequestMapper(RoleRequest roleRequest, RoleEntity roleEntity) {

@@ -15,5 +15,7 @@ public class ShoppingResponse {
     private int buyingPrice;
     private int balanceAmount;
     private String purchaseTime;
+    private String purchaseDate;
     private String purchaseModifyTime;
+    private String purchaseModifyDate;
 }

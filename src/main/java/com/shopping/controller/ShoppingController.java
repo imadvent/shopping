@@ -66,6 +66,15 @@ public class ShoppingController {
         return shoppingResponseList;
     }
 
+    @GetMapping(value = "/getFrom")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public List<ShoppingResponse> getDataFromAndTo(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) {
+
+        List<ShoppingResponse> shoppingFromTo = shoppingService.getFrom(fromDate, toDate);
+        ResponseEntity.ok();
+        return shoppingFromTo;
+    }
+
     @PutMapping(value = "/{shoppingId}")
     @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<?> update(@PathVariable("shoppingId") String shoppingId, @RequestBody ShoppingRequest shoppingRequest) {

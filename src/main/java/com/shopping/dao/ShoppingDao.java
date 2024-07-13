@@ -24,8 +24,12 @@ public interface ShoppingDao extends JpaRepository<ShoppingEntity, String> {
     @Modifying(clearAutomatically = true)
     @Query(value = "update ShoppingEntity e set e.productName = :productName, e.customerName = :customerName," +
             "e.customerEmail = :customerEmail, e.buyingPrice = :buyingPrice, e.sellingPrice = :sellingPrice," +
-            "e.balanceAmount = :balanceAmount, e.purchaseModifyTime = :purchaseModifyTime where e.shoppingId = :shoppingId")
+            "e.balanceAmount = :balanceAmount, e.purchaseModifyTime = :purchaseModifyTime, e.purchaseModifyDate = :purchaseModifyDate where e.shoppingId = :shoppingId")
     void updateWithQuery(@Param("shoppingId") String shoppingId, @Param("productName") String productName, @Param("customerName") String customerName, @Param("customerEmail") String customerEmail,
-                         @Param("buyingPrice") int buyingPrice, @Param("sellingPrice") int sellingPrice, @Param("balanceAmount") int balanceAmount, @Param("purchaseModifyTime") String purchaseModifyTime);
+                         @Param("buyingPrice") int buyingPrice, @Param("sellingPrice") int sellingPrice, @Param("balanceAmount") int balanceAmount, @Param("purchaseModifyTime") String purchaseModifyTime,
+                         @Param("purchaseModifyDate") String purchaseModifyDate);
+
+    @Query(value = "select t from ShoppingEntity t where t.purchaseDate between :startDate and :endDate")
+    List<ShoppingEntity> searchByDate(@Param("startDate") String startDate, @Param("endDate") String endDate);
 
 }

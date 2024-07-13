@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,29 +23,21 @@ import static java.time.LocalDateTime.now;
 @Service
 public class ShoppingServiceImpl implements ShoppingService {
 
-    public static Integer counter = 0;
-
     @Autowired
     private ShoppingDao shoppingDao;
 
     @Override
     public String generateShoppingId() {
 
-        StringBuilder shoppingId = new StringBuilder(SHOPPING_ID_PREFIX.getCode());
-        if (counter == 0) {
-            try {
-                String maxIdTill = shoppingDao.findAll().stream().map(ShoppingEntity::getShoppingId)
-                        .max(Comparator.naturalOrder()).orElse(shoppingId + "0");
-                counter = Integer.parseInt(maxIdTill.substring(SHOPPING_ID_PREFIX.getCode().length()));
-                counter++;
-            } catch (Exception e) {
-                ++counter;
-            }
-        } else {
-            ++counter;
-        }
+        String shoppingId;
+        String shoppingIdPrefix = SHOPPING_ID_PREFIX.getCode();
+        SecureRandom random = new SecureRandom();
+        do {
+            int randomNumber = random.nextInt(90000) + 10000;
+            shoppingId = shoppingIdPrefix + randomNumber;
+        } while (shoppingDao.existsById(shoppingId));
 
-        return prefixAppend(shoppingId, counter);
+        return shoppingId;
 
     }
 
@@ -88,8 +80,10 @@ public class ShoppingServiceImpl implements ShoppingService {
         }
 
         shoppingEntity.setCustomerName(extractName(shoppingEntity.getCustomerEmail()));
-        shoppingEntity.setPurchaseTime(dateToStringFormat(now()));
+        shoppingEntity.setPurchaseTime(extractTime(dateToStringFormat(now())));
+        shoppingEntity.setPurchaseDate(extractDate(dateToStringFormat(now())));
         shoppingEntity.setPurchaseModifyTime("-");
+        shoppingEntity.setPurchaseModifyDate("-");
         shoppingEntity.setBalanceAmount(shoppingEntity.getBuyingPrice() - shoppingEntity.getSellingPrice());
 
         shoppingDao.save(shoppingEntity);
@@ -190,6 +184,29 @@ public class ShoppingServiceImpl implements ShoppingService {
     }
 
     @Override
+    public List<ShoppingResponse> getFrom(String fromDate, String toDate) {
+        List<ShoppingResponse> shoppingFromTo = new ArrayList<>();
+        List<ShoppingEntity> shopping = shoppingDao.searchByDate(fromDate, toDate);
+
+        if (!isValidDate(fromDate, toDate)) {
+            throw new ShoppingCustomBadRequestException("INVALID_SHOPING_DATE", "The shopping date is invalid");
+        }
+
+        if (shopping.isEmpty()) {
+            throw new ShoppingCustomNotFoundException("NO_SHOPPING_RECORDS", "There is no shopping records from this date");
+        }
+
+        shopping.forEach(dateRecord -> {
+            ShoppingResponse shoppingResponse = new ShoppingResponse();
+            shoppingResponseMapper(dateRecord, shoppingResponse);
+
+            shoppingFromTo.add(shoppingResponse);
+        });
+
+        return shoppingFromTo;
+    }
+
+    @Override
     public ShoppingResponse change(String shoppingId, ShoppingRequest shoppingRequest) {
 
         ShoppingResponse shoppingResponse = new ShoppingResponse();
@@ -210,7 +227,8 @@ public class ShoppingServiceImpl implements ShoppingService {
 
         shop.setCustomerName(extractName(shop.getCustomerEmail()));
         shop.setBalanceAmount(shoppingRequest.getBuyingPrice() - shoppingRequest.getSellingPrice());
-        shop.setPurchaseModifyTime(dateToStringFormat(now()));
+        shop.setPurchaseModifyTime(extractTime(dateToStringFormat(now())));
+        shop.setPurchaseModifyDate(extractDate(dateToStringFormat(now())));
 
         if (shop.getBalanceAmount() < 0 || shop.getBuyingPrice() < shop.getSellingPrice()) {
             throw new ShoppingCustomBadRequestException("INVALID_BALANCE", "buying balance is low");
@@ -263,9 +281,11 @@ public class ShoppingServiceImpl implements ShoppingService {
 
         shoppingEntity.setCustomerName(extractName(shopping.getCustomerEmail()));
         shoppingEntity.setBalanceAmount(shopping.getBuyingPrice() - shopping.getSellingPrice());
-        shoppingEntity.setPurchaseModifyTime(dateToStringFormat(now()));
+        shoppingEntity.setPurchaseModifyTime(extractTime(dateToStringFormat(now())));
+        shoppingEntity.setPurchaseModifyDate(extractDate(dateToStringFormat(now())));
         shoppingDao.updateWithQuery(shoppingId, shopping.getProductName(), shoppingEntity.getCustomerName(), shopping.getCustomerEmail(),
-                shopping.getSellingPrice(), shopping.getBuyingPrice(), shoppingEntity.getBalanceAmount(), shoppingEntity.getPurchaseModifyTime());
+                shopping.getSellingPrice(), shopping.getBuyingPrice(), shoppingEntity.getBalanceAmount(), shoppingEntity.getPurchaseModifyTime(),
+                shoppingEntity.getPurchaseModifyDate());
 
         if (shopping.getBuyingPrice() < shopping.getSellingPrice()) {
             throw new ShoppingCustomBadRequestException("INVALID_BALANCE", "Buying price is less than selling price");

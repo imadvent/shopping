@@ -21,6 +21,8 @@ public interface ShoppingService {
 
     List<ShoppingResponse> viewAll();
 
+    List<ShoppingResponse> getFrom(String fromDate, String toDate);
+
     ShoppingResponse change(String id, ShoppingRequest entity);
 
     void remove(String id);
