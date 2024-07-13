@@ -1,6 +1,7 @@
 package com.shopping.controller;
 
-import com.shopping.entity.ShoppingEntity;
+import com.shopping.dto.ShoppingRequest;
+import com.shopping.dto.ShoppingResponse;
 import com.shopping.service.ShoppingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,8 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static com.shopping.util.ShoppingUtil.isValidEmail;
 
 @RestController
 @RequestMapping(value = "/shopping")
@@ -21,27 +20,7 @@ public class ShoppingController {
 
     @PostMapping(value = "/insert")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<String> create(@RequestBody ShoppingEntity shopping) {
-
-        if (shopping.getShoppingId() != null && !shopping.getShoppingId().isEmpty()) {
-            return ResponseEntity.badRequest().body("Should not enter Shopping ID");
-        }
-
-        if (shopping.getProductName() == null || shopping.getProductName().isEmpty()) {
-            return ResponseEntity.badRequest().body("Product name is mandatory");
-        }
-
-        if (!isValidEmail(shopping.getCustomerEmail())) {
-            return ResponseEntity.badRequest().body("Invalid customer email");
-        }
-
-        if (shopping.getBuyingPrice() <= 0 || shopping.getSellingPrice() <= 0) {
-            return ResponseEntity.badRequest().body("Value should be non negative");
-        }
-
-        if (shopping.getBuyingPrice() < shopping.getSellingPrice()) {
-            return ResponseEntity.badRequest().body("Insufficient balance");
-        }
+    public ResponseEntity<String> create(@RequestBody ShoppingRequest shopping) {
 
         shoppingService.insert(shopping);
         return ResponseEntity.status(HttpStatus.CREATED).body("Shopping item saved successfully");
@@ -56,41 +35,62 @@ public class ShoppingController {
     @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<?> read(@PathVariable("shoppingId") String shoppingId) {
 
-        return new ResponseEntity<>(shoppingService.view(shoppingId), HttpStatus.OK);
+        ShoppingResponse shoppingResponse = shoppingService.view(shoppingId);
+
+        return new ResponseEntity<>(shoppingResponse, HttpStatus.OK);
     }
 
     @GetMapping(value = "/product")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<ShoppingEntity>> readByProductName(@RequestParam("productName") String productName) {
-        return new ResponseEntity<>(shoppingService.viewByProductName(productName), HttpStatus.OK);
+    public ResponseEntity<List<ShoppingResponse>> readByProductName(@RequestParam("productName") String productName) {
+
+        List<ShoppingResponse> shoppingResponse = shoppingService.viewByProductName(productName);
+        return new ResponseEntity<>(shoppingResponse, HttpStatus.OK);
     }
 
     @GetMapping(value = "/custprod")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<ShoppingEntity>> readByCustomerNameOrProductName
+    public ResponseEntity<List<ShoppingResponse>> readByCustomerNameOrProductName
             (@RequestParam("customerName") String customerName, @RequestParam("productName") String productName) {
-        return new ResponseEntity<>(shoppingService.viewByCustomerNameOrProductName(customerName, productName), HttpStatus.OK);
+
+        List<ShoppingResponse> shoppingResponses = shoppingService.viewByCustomerNameOrProductName(customerName, productName);
+        return new ResponseEntity<>(shoppingResponses, HttpStatus.OK);
     }
 
     @GetMapping(value = "/getall")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public List<ShoppingEntity> readAll() {
+    public List<ShoppingResponse> readAll() {
+
+        List<ShoppingResponse> shoppingResponseList = shoppingService.viewAll();
         ResponseEntity.ok();
-        return shoppingService.viewAll();
+        return shoppingResponseList;
+    }
+
+    @GetMapping(value = "/getFrom")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public List<ShoppingResponse> getDataFromAndTo(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) {
+
+        List<ShoppingResponse> shoppingFromTo = shoppingService.getFrom(fromDate, toDate);
+        ResponseEntity.ok();
+        return shoppingFromTo;
     }
 
     @PutMapping(value = "/{shoppingId}")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntity<?> update(@PathVariable("shoppingId") String shoppingId, @RequestBody ShoppingEntity shopping) {
+    public ResponseEntity<?> update(@PathVariable("shoppingId") String shoppingId, @RequestBody ShoppingRequest shoppingRequest) {
 
-        return new ResponseEntity<>(shoppingService.change(shoppingId, shopping), HttpStatus.OK);
+        ShoppingResponse shoppingResponse = shoppingService.change(shoppingId, shoppingRequest);
+
+        return new ResponseEntity<>(shoppingResponse, HttpStatus.OK);
     }
 
     @PutMapping(value = "/queryupdate")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> updateWithQuery(@RequestParam("shoppingId") String shoppingId, @RequestBody ShoppingEntity shopping) {
+    public ResponseEntity<?> updateWithQuery(@RequestParam("shoppingId") String shoppingId, @RequestBody ShoppingRequest shoppingRequest) {
 
-        return new ResponseEntity<>(shoppingService.changeByQuery(shoppingId, shopping), HttpStatus.OK);
+        ShoppingResponse shoppingResponse = shoppingService.changeByQuery(shoppingId, shoppingRequest);
+
+        return new ResponseEntity<>(shoppingResponse, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{shoppingId}")

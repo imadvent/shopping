@@ -1,4 +1,4 @@
-package com.shopping.security;
+package com.shopping.config;
 
 import com.shopping.filter.JwtFilter;
 import com.shopping.service.impl.CustomUserDetailsServiceImpl;
@@ -62,7 +62,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
-                .authorizeHttpRequests().requestMatchers("/shopping/check", "/role", "/authenticate").permitAll()
+                .authorizeHttpRequests().requestMatchers("/shopping/check", "/role", "/authenticate", "/swagger-ui/**",
+                        "/v3/api-docs/**").permitAll()
                 .and()
                 .authorizeHttpRequests().requestMatchers("/shopping/**", "/getrole").authenticated()
                 .and()

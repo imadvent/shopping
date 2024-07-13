@@ -1,26 +1,29 @@
 package com.shopping.service;
 
-import com.shopping.entity.ShoppingEntity;
+import com.shopping.dto.ShoppingRequest;
+import com.shopping.dto.ShoppingResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface ShoppingService {
 
-    ShoppingEntity insert(ShoppingEntity shopping);
+    ShoppingResponse insert(ShoppingRequest shopping);
 
-    ShoppingEntity view(String id);
+    ShoppingResponse view(String id);
 
-    List<ShoppingEntity> viewByProductName(String productName);
+    List<ShoppingResponse> viewByProductName(String productName);
 
-    List<ShoppingEntity> viewByCustomerNameOrProductName(String customerName, String productName);
+    List<ShoppingResponse> viewByCustomerNameOrProductName(String customerName, String productName);
 
     @Transactional
-    ShoppingEntity changeByQuery(String shoppingId, ShoppingEntity shopping);
+    ShoppingResponse changeByQuery(String shoppingId, ShoppingRequest shopping);
 
-    List<ShoppingEntity> viewAll();
+    List<ShoppingResponse> viewAll();
 
-    ShoppingEntity change(String id, ShoppingEntity entity);
+    List<ShoppingResponse> getFrom(String fromDate, String toDate);
+
+    ShoppingResponse change(String id, ShoppingRequest entity);
 
     void remove(String id);
 

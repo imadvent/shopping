@@ -1,20 +1,12 @@
-package com.shopping.entity;
+package com.shopping.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-public class ShoppingEntity {
+public class ShoppingResponse {
 
-    @Id
     private String shoppingId;
     private String productName;
     private String customerName;
