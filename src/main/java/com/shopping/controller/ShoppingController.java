@@ -19,7 +19,7 @@ public class ShoppingController {
     private ShoppingService shoppingService;
 
     @PostMapping(value = "/insert")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<String> create(@RequestBody ShoppingRequest shopping) {
 
         shoppingService.insert(shopping);
@@ -49,7 +49,7 @@ public class ShoppingController {
     }
 
     @GetMapping(value = "/custprod")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<List<ShoppingResponse>> readByCustomerNameOrProductName
             (@RequestParam("customerName") String customerName, @RequestParam("productName") String productName) {
 

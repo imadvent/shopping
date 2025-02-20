@@ -1,6 +1,7 @@
 package com.shopping.config;
 
 import com.shopping.filter.JwtFilter;
+import com.shopping.security.CustomAuthenticationEntryPoint;
 import com.shopping.service.impl.CustomUserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +28,9 @@ public class SecurityConfig {
 
     @Autowired
     private JwtFilter jwtFilter;
+    
+    @Autowired
+    private CustomAuthenticationEntryPoint authenticationEntryPoint;
 
 //    @Bean  //it is for harcoded roles
 //    public UserDetailsService userDetailsService(PasswordEncoder encoder) {
@@ -58,21 +63,23 @@ public class SecurityConfig {
 //                .and().formLogin()
 //                .and().build();
 //    }
-
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable()
-                .authorizeHttpRequests().requestMatchers("/shopping/check", "/role", "/authenticate", "/swagger-ui/**",
-                        "/v3/api-docs/**").permitAll()
-                .and()
-                .authorizeHttpRequests().requestMatchers("/shopping/**", "/getrole").authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/shopping/check", "/role", "/authenticate", "/swagger-ui/**", "/v3/api-docs/**")
+                        .permitAll()
+                        .requestMatchers("/shopping/**", "/getrole")
+                        .authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        
+        return http.build();
     }
 
     @Bean

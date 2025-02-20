@@ -143,7 +143,7 @@ public class ShoppingServiceImpl implements ShoppingService {
 
         List<ShoppingResponse> shoppingResponseList = new ArrayList<>();
 
-        if (customerName.isBlank() && customerName.isEmpty() && productName.isBlank() && productName.isEmpty()) {
+        if (customerName.isBlank() && productName.isBlank()) {
             throw new ShoppingCustomBadRequestException("INVALID_PRODUCT_AND_CUSTOMER_NAME", "Product or customer name is mandatory");
         }
 
@@ -151,7 +151,7 @@ public class ShoppingServiceImpl implements ShoppingService {
 
         if (products.isEmpty()) {
             throw new ShoppingCustomNotFoundException("NO_CUSTOMER_NAME_OR_PRODUCT_NAME_EXIST",
-                    "The products with name " + customerName + " or product name " + productName + " are not present");
+                    "The customer with name " + customerName + " or product name " + productName + " are not present");
         }
 
         products.forEach(custProd -> {
@@ -253,7 +253,7 @@ public class ShoppingServiceImpl implements ShoppingService {
 
         ShoppingResponse shoppingResponse = new ShoppingResponse();
 
-        if (shoppingId.isBlank() && shoppingId.isEmpty()) {
+        if (shoppingId.isEmpty()) {
             throw new ShoppingCustomBadRequestException("EMPTY_SHOPPING_ID", "Shopping ID should not be blank");
         }
 
